@@ -14,7 +14,6 @@ class Balaodefala extends StatefulWidget {
 }
 
 class _BalaodefalaState extends State<Balaodefala> {
-  late String _currentFala;
   late int _currentIndex;
   late Timer _timer;
   late String _displayedText;
@@ -22,7 +21,6 @@ class _BalaodefalaState extends State<Balaodefala> {
   @override
   void initState() {
     super.initState();
-    _currentFala = '';
     _currentIndex = 0;
     _displayedText = '';
     _startTyping();
