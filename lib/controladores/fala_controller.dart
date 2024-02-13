@@ -7,11 +7,10 @@ class FalaController {
   FalaController()
       : falas = [
     'Olá!',
-    'Como vai?',
-    'Estou bem, obrigado!',
-    'Qual é o seu nome?',
-    'Me conte sobre o seu dia.',
-    'Tenha um bom dia!',
+    'Meu nome é josé e eu sou um semeador.',
+    'Hoje vou te ensinar a semear de uma maneira divertida.',
+    'Preparado para essa aventura?',
+    'Então vamos lá, partiu semear!',
   ];
 
   String get currentFala => falas[currentIndex];
