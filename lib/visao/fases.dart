@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:seed/modelo/semeador.dart';
-import 'package:seed/modelo/fala.dart'; // Importe o widget BalaoDeFala
+import 'package:seed/controladores/fala_controller.dart';
+import 'package:seed/modelo/fala.dart';
 
 class Fases extends StatefulWidget {
   final Semeador semeador; // Semeador selecionado
@@ -60,10 +61,12 @@ class Fases extends StatefulWidget {
 class _FasesState extends State<Fases> with TickerProviderStateMixin {
   late AnimationController _controller;
   bool _showBalao = false;
+  late FalaController _falaController;
 
   @override
   void initState() {
     super.initState();
+    _falaController = FalaController();
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 3),
@@ -116,15 +119,8 @@ class _FasesState extends State<Fases> with TickerProviderStateMixin {
               bottom: 0,
               left: 0,
               right: 0,
-              child: Container(
-                height: widget.balaoHeight, // Use a altura fornecida
-                padding: EdgeInsets.all(16),
-                color: Colors.black.withOpacity(0.4), // Define a transparência do preto
-                child: Text(
-                  'Olá! meu nome é israel.',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+              child: Balaodefala(controller: FalaController(),),
+
             ),
         ],
       ),

@@ -1,70 +1,73 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:seed/controladores/fala_controller.dart';
 
 class Balaodefala extends StatefulWidget {
+  final FalaController controller;
   final double transparencia;
+  final int typingSpeed; // Velocidade de digitação em milissegundos
 
-  const Balaodefala({Key? key, this.transparencia = 0.5}) : super(key: key);
+  const Balaodefala({Key? key, required this.controller, this.transparencia = 0.5, this.typingSpeed = 10}) : super(key: key);
 
   @override
   _BalaodefalaState createState() => _BalaodefalaState();
 }
 
-class _BalaodefalaState extends State<Balaodefala> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<int> _animation;
-  List<String> _mensagens = [
-    "Olá, eu sou uma mensagem.",
-    "Estou animado!",
-    "Clique em mim para ver mais.",
-  ];
-  int _indice = 0;
+class _BalaodefalaState extends State<Balaodefala> {
+  late String _currentFala;
+  late int _currentIndex;
+  late Timer _timer;
+  late String _displayedText;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: _mensagens[_indice].length * 100), // Ajuste a duração baseada no comprimento do texto inicial
-    );
-    _animation = IntTween(begin: 0, end: _mensagens[_indice].length).animate(_controller);
-    _controller.forward();
+    _currentFala = '';
+    _currentIndex = 0;
+    _displayedText = '';
+    _startTyping();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _timer.cancel();
     super.dispose();
   }
 
-  void _trocarMensagem() {
-    setState(() {
-      _indice = (_indice + 1) % _mensagens.length;
-      _controller.duration = Duration(milliseconds: _mensagens[_indice].length * 100); // Atualize a duração da animação com base no novo texto
-      _controller.reset();
-      _controller.forward();
+  void _startTyping() {
+    _timer = Timer.periodic(Duration(milliseconds: widget.typingSpeed), (timer) {
+      setState(() {
+        _displayedText = widget.controller.currentFala.substring(0, _currentIndex + 1);
+        if (_currentIndex < widget.controller.currentFala.length - 1) {
+          _currentIndex++;
+        } else {
+          _timer.cancel();
+        }
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _trocarMensagem,
-      child: Positioned(
-        bottom: 0,
-        left: 0,
-        right: 0,
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _currentIndex = 0;
+            _displayedText = '';
+            widget.controller.nextFala();
+            _startTyping();
+          });
+        },
         child: Container(
           padding: EdgeInsets.all(16),
-          color: Colors.black.withOpacity(widget.transparencia), // Definindo a transparência da cor preta
-          child: AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) {
-              final text = _mensagens[_indice].substring(0, _animation.value);
-              return Text(
-                text,
-                style: TextStyle(color: Colors.white),
-              );
-            },
+          color: Colors.black.withOpacity(widget.transparencia),
+          child: Text(
+            _displayedText,
+            style: TextStyle(color: Colors.white),
           ),
         ),
       ),
