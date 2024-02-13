@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:seed/modelo/semeador.dart'; // Importe a classe Semeador
+import 'package:seed/modelo/semeador.dart';
+import 'package:seed/modelo/fala.dart'; // Importe o widget BalaoDeFala
 
 class Fases extends StatefulWidget {
   final Semeador semeador; // Semeador selecionado
@@ -7,6 +8,7 @@ class Fases extends StatefulWidget {
   final double positionedHeight; // Altura do widget Positioned
   final double animationBegin; // Valor inicial da animação Tween
   final double animationEnd; // Valor final da animação Tween
+  final double balaoHeight; // Altura do balão
 
   Fases({
     required this.semeador,
@@ -14,87 +16,39 @@ class Fases extends StatefulWidget {
     double? positionedHeight,
     double? animationBegin,
     double? animationEnd,
-  })  : this.positionedWidth = _getPositionedWidth(semeador, positionedWidth),
-        this.positionedHeight = _getPositionedHeight(semeador, positionedHeight),
-        this.animationBegin = _getAnimationBegin(semeador, animationBegin),
-        this.animationEnd = _getAnimationEnd(semeador, animationEnd);
+    double? balaoHeight, // Adicionando a altura do balão
+  })  : this.positionedWidth = positionedWidth ?? _getPositionedWidth(semeador),
+        this.positionedHeight = positionedHeight ?? _getPositionedHeight(semeador),
+        this.animationBegin = animationBegin ?? _getAnimationBegin(semeador),
+        this.animationEnd = animationEnd ?? _getAnimationEnd(semeador),
+        this.balaoHeight = balaoHeight ?? 80; // Valor padrão de altura do balão
 
-  // Método para calcular a largura do widget Positioned com base no tipo de semeador
-  static double _getPositionedWidth(Semeador semeador, double? customWidth) {
-    if (customWidth != null) {
-      return customWidth;
-    }
-    if (semeador.id == 1) {
-      return 500; // Largura para o semeador1
-    }
-    if (semeador.id == 2) {
-      return 500; // Largura para o semeador1
-    }
-    if (semeador.id == 3) {
-      return 500; // Largura para o semeador1
-    }
-    if (semeador.id == 4) {
-      return 500; // Largura para o semeador1
-    }
-    return 200; // Largura padrão
+  static double _getPositionedWidth(Semeador semeador) {
+    return [1, 2, 3, 4].contains(semeador.id) ? 500 : 200; // Largura para o semeador1, semeador2, semeador3 ou semeador4
   }
 
-  // Método para calcular a altura do widget Positioned com base no tipo de semeador
-  static double _getPositionedHeight(Semeador semeador, double? customHeight) {
-    if (customHeight != null) {
-      return customHeight;
-    }
+  static double _getPositionedHeight(Semeador semeador) {
     if (semeador.id == 1) {
       return 250; // Altura para o semeador1
-    }
-    if (semeador.id == 2) {
-      return 200; // Altura para o semeador1
-    }
-    if (semeador.id == 3) {
-      return 200; // Altura para o semeador1
-    }
-    if (semeador.id == 4) {
-      return 240; // Altura para o semeador1
+    } else if ([2, 3].contains(semeador.id)) {
+      return 200; // Altura para o semeador2 ou semeador3
+    } else if (semeador.id == 4) {
+      return 240; // Altura para o semeador4
     }
     return 200; // Altura padrão
   }
 
-  // Método para calcular o valor inicial da animação Tween com base no tipo de semeador
-  static double _getAnimationBegin(Semeador semeador, double? customBegin) {
-    if (customBegin != null) {
-      return customBegin;
-    }
-    if (semeador.id == 1) {
-      return -300; // Início para o semeador1
-    }
-    if (semeador.id == 2) {
-      return -300; // Início para o semeador1
-    }
-    if (semeador.id == 3) {
-      return -300; // Início para o semeador1
-    }
-    if (semeador.id == 4) {
-      return -300; // Início para o semeador1
-    }
-    return -300; // Início padrão
+  static double _getAnimationBegin(Semeador semeador) {
+    return -300; // Valor inicial padrão da animação
   }
 
-  // Método para calcular o valor final da animação Tween com base no tipo de semeador
-  static double _getAnimationEnd(Semeador semeador, double? customEnd) {
-    if (customEnd != null) {
-      return customEnd;
-    }
+  static double _getAnimationEnd(Semeador semeador) {
     if (semeador.id == 1) {
       return -150; // Fim para o semeador1
-    }
-    if (semeador.id == 2) {
-      return -200; // Fim para o semeador1
-    }
-    if (semeador.id == 3) {
-      return -150; // Fim para o semeador1
-    }
-    if (semeador.id == 4) {
-      return -150; // Fim para o semeador1
+    } else if ([2, 3].contains(semeador.id)) {
+      return -200; // Fim para o semeador2 ou semeador3
+    } else if (semeador.id == 4) {
+      return -150; // Fim para o semeador4
     }
     return -20; // Fim padrão
   }
@@ -103,7 +57,24 @@ class Fases extends StatefulWidget {
   _FasesState createState() => _FasesState();
 }
 
-class _FasesState extends State<Fases> {
+class _FasesState extends State<Fases> with TickerProviderStateMixin {
+  late AnimationController _controller;
+  bool _showBalao = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 3),
+    );
+    _controller.forward().whenComplete(() {
+      setState(() {
+        _showBalao = true;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,26 +91,49 @@ class _FasesState extends State<Fases> {
           ),
 
           // Imagem do Semeador
-          TweenAnimationBuilder<double>(
-            duration: Duration(seconds: 3),
-            tween: Tween<double>(
-              begin: widget.animationBegin, // Inicia a animação com base no tipo de semeador
-              end: widget.animationEnd, // Termina a animação com base no tipo de semeador
-            ),
-            builder: (BuildContext context, double value, Widget? child) {
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
               return Positioned(
                 bottom: 0, // Coloca a imagem no fundo da tela
-                left: value, // Controla a posição horizontal da imagem
-                child: Image.asset(
-                  widget.semeador.imageUrl,
-                  width: widget.positionedWidth, // Usa a largura configurável
-                  height: widget.positionedHeight, // Usa a altura configurável
-                ),
+                left: Tween<double>(
+                  begin: widget.animationBegin,
+                  end: widget.animationEnd,
+                ).animate(_controller).value,
+                child: child!,
               );
             },
+            child: Image.asset(
+              widget.semeador.imageUrl,
+              width: widget.positionedWidth, // Usa a largura configurável
+              height: widget.positionedHeight, // Usa a altura configurável
+            ),
           ),
+
+          // Balão de Fala
+          if (_showBalao)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: widget.balaoHeight, // Use a altura fornecida
+                padding: EdgeInsets.all(16),
+                color: Colors.black.withOpacity(0.4), // Define a transparência do preto
+                child: Text(
+                  'Olá! meu nome é israel.',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }
