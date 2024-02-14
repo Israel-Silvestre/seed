@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       ),
       home: HomePage(),
       routes: {
-        '/escolher-grupo': (context) => EscolhaGrupo(semeadores: semeadores), // Passa a lista de semeadores para a tela de escolha de grupo
+        '/escolher-grupo': (context) => EscolhaGrupo(semeadores: semeadores),
       },
     );
   }
