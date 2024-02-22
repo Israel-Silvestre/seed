@@ -51,35 +51,37 @@ class _EscolhaGrupoState extends State<EscolhaGrupo> {
             left: 0.0,
             right: 0.0,
             child: Center(
-              child: CarouselWidget(
-                semeadores: widget.semeadores, // Passando a lista de semeadores
-                onSemeadorSelected: (index) {
-                  setState(() {
-                    _grupoSelecionado = index; // Atualizando o semeador selecionado
-                  });
-                },
-              ),
-            ),
-          ),
+              child: Column(
+                children: [
+                  CarouselWidget(
+                    semeadores: widget.semeadores, // Passando a lista de semeadores
+                    onSemeadorSelected: (index) {
+                      setState(() {
+                        _grupoSelecionado = index; // Atualizando o semeador selecionado
+                        // Navegar para a tela de fases e passar o semeador selecionado
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Fases(semeador: widget.semeadores[_grupoSelecionado])),
+                        );
+                      });
+                    },
+                    onCardChanged: (index) {
+                      setState(() {
+                        _grupoSelecionado = index; // Atualiza o semeador selecionado conforme o card em evidência no carrossel
+                      });
+                    },
+                  ),
 
-          // Botão Avançar
-          Positioned(
-            bottom: 50.0,
-            left: 0.0,
-            right: 0.0,
-            child: Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Navegar para a tela de fases e passar o semeador selecionado
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Fases(semeador: widget.semeadores[_grupoSelecionado])),
-                  );
-                },
-                child: Text(
-                  'Avançar',
-                  style: TextStyle(fontSize: 20.0),
-                ),
+                  // Título abaixo do CarouselWidget
+                  Text(
+                    widget.semeadores[_grupoSelecionado].nome, // Exibe o atributo "nome" do semeador selecionado
+                    style: TextStyle(
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -95,11 +97,13 @@ class CarouselWidget extends StatelessWidget {
   final double imageHeight;
   final double itemPadding;
   final ValueChanged<int> onSemeadorSelected; // Evento para quando um semeador for selecionado
+  final ValueChanged<int> onCardChanged; // Evento para quando o card em evidência mudar
 
   const CarouselWidget({
     Key? key,
     required this.semeadores,
     required this.onSemeadorSelected,
+    required this.onCardChanged,
     this.imageHeight = 400.0, // Altura padrão da imagem
     this.itemPadding = 3.0, // Espaçamento padrão entre os itens
   }) : super(key: key);
@@ -146,6 +150,9 @@ class CarouselWidget extends StatelessWidget {
         autoPlayInterval: Duration(seconds: 3),
         autoPlayAnimationDuration: Duration(milliseconds: 800),
         scrollDirection: Axis.horizontal,
+        onPageChanged: (index, reason) {
+          onCardChanged(index); // Notificar quando o card em evidência mudar
+        },
       ),
     );
   }

@@ -67,7 +67,7 @@ class _BalaodefalaState extends State<Balaodefala> {
     // Use o Navigator para navegar para a nova tela
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => VideoScreen()), // Substitua 'NovaTelaVideo()' pela sua nova tela
+      MaterialPageRoute(builder: (context) => VideoScreen(videoPath: "assets/video/trailer.mp4",)), // Substitua 'NovaTelaVideo()' pela sua nova tela
     );
   }
 }
