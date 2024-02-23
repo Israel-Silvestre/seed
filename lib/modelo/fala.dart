@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:seed/controladores/fala_controller.dart';
+import 'package:seed/modelo/semeador.dart'; // Importe a classe Semeador
 import 'package:seed/visao/video.dart'; // Importe a tela do vídeo aqui
 
 class Balaodefala extends StatefulWidget {
   final FalaController controller;
   final double transparencia;
   final int typingSpeed; // Velocidade de digitação em milissegundos
+  final Semeador semeador; // Novo parâmetro Semeador
 
-  const Balaodefala({Key? key, required this.controller, this.transparencia = 0.5, this.typingSpeed = 800}) : super(key: key);
+  const Balaodefala({Key? key, required this.controller, this.transparencia = 0.5, this.typingSpeed = 800, required this.semeador}) : super(key: key);
 
   @override
   _BalaodefalaState createState() => _BalaodefalaState();
@@ -67,7 +69,7 @@ class _BalaodefalaState extends State<Balaodefala> {
     // Use o Navigator para navegar para a nova tela
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => VideoScreen(videoPath: "assets/video/trailer.mp4",)), // Substitua 'NovaTelaVideo()' pela sua nova tela
+      MaterialPageRoute(builder: (context) => VideoScreen(videoPath: "assets/video/trailer.mp4", semeador: widget.semeador)), // Passando semeador como parâmetro
     );
   }
 }

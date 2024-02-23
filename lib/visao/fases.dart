@@ -119,8 +119,10 @@ class _FasesState extends State<Fases> with TickerProviderStateMixin {
               bottom: 0,
               left: 0,
               right: 0,
-              child: Balaodefala(controller: FalaController(),),
-
+              child: Balaodefala(
+                controller: FalaController(),
+                semeador: widget.semeador, // Passando semeador como parâmetro
+              ),
             ),
         ],
       ),

@@ -2,12 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
+import 'package:seed/modelo/semeador.dart'; // Importe a classe Semeador
 import 'package:seed/visao/lancar_semente.dart'; // Importe a classe Launch aqui
 
 class VideoScreen extends StatefulWidget {
   final String videoPath;
+  final Semeador semeador; // Novo parâmetro Semeador
 
-  const VideoScreen({required this.videoPath});
+  const VideoScreen({required this.videoPath, required this.semeador}); // Atualização do construtor
 
   @override
   _VideoScreenState createState() => _VideoScreenState();
@@ -76,6 +78,7 @@ class _VideoScreenState extends State<VideoScreen> {
           (String imagePath) {
         // Aqui você pode tratar a foto tirada
       },
+      widget.semeador, // Passando o objeto Semeador
     );
   }
 

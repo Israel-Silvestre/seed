@@ -2,20 +2,24 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:seed/modelo/semeador.dart'; // Importe a classe Semeador
+import 'package:seed/modelo/camera.dart';
 
 class Launch extends StatefulWidget {
   final String backgroundImage;
   final Function(String) onPhotoTaken;
+  final Semeador semeador; // Novo parâmetro Semeador
 
   const Launch({
     required this.backgroundImage,
     required this.onPhotoTaken,
+    required this.semeador, // Adicionando semeador ao construtor
   });
 
-  static void navigate(BuildContext context, String backgroundImage, Function(String) onPhotoTaken) {
+  static void navigate(BuildContext context, String backgroundImage, Function(String) onPhotoTaken, Semeador semeador) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Launch(backgroundImage: backgroundImage, onPhotoTaken: onPhotoTaken)),
+      MaterialPageRoute(builder: (context) => Launch(backgroundImage: backgroundImage, onPhotoTaken: onPhotoTaken, semeador: semeador)), // Passando semeador como parâmetro
     );
   }
 
@@ -52,7 +56,7 @@ class _LaunchState extends State<Launch> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              child: Text('Tirar Foto', style: TextStyle(color: Colors.white)),
+              child: Text('Escanear Terra', style: TextStyle(color: Colors.white)),
             ),
           ),
         ],
@@ -80,7 +84,7 @@ class _LaunchState extends State<Launch> {
 
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => CameraScreen(camera)),
+      MaterialPageRoute(builder: (context) => CameraScreen(camera, widget.semeador)), // Passando semeador como parâmetro
     );
 
     if (result != null) {
@@ -89,65 +93,5 @@ class _LaunchState extends State<Launch> {
       });
       widget.onPhotoTaken(result);
     }
-  }
-}
-
-class CameraScreen extends StatefulWidget {
-  final CameraDescription camera;
-
-  CameraScreen(this.camera);
-
-  @override
-  _CameraScreenState createState() => _CameraScreenState();
-}
-
-class _CameraScreenState extends State<CameraScreen> {
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = CameraController(
-      widget.camera,
-      ResolutionPreset.medium,
-    );
-    _initializeControllerFuture = _controller.initialize();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Camera')),
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return CameraPreview(_controller);
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.camera),
-        onPressed: () async {
-          try {
-            await _initializeControllerFuture;
-            final image = await _controller.takePicture();
-            Navigator.pop(context, image.path);
-          } catch (e) {
-            print(e);
-          }
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    );
   }
 }
